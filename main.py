@@ -35,14 +35,13 @@ import sys
 def getPath():
     return os.path.dirname(os.path.abspath(__file__));
 
-def renameFile(fullFileName, flags):
+def renameFile(filePath, fileName, flags):
     # check, if the file is there
-    if (os.path.exists(fullFileName) == True):
-        _file_path = os.path.dirname(fullFileName);
-        if (len(_file_path) > 1): _file_path = _file_path + '/';
-        _file_name = os.path.basename(fullFileName)
+    _full_original_name = os.path.join(filePath, fileName);
+    if (os.path.exists(_full_original_name) == True):
+        _file_name = os.path.basename(fileName)
         # check if file has 'gbr' extention
-        if (os.path.splitext(fullFileName)[1] == ".gbr"):
+        if (os.path.splitext(fileName)[1] == ".gbr"):
             _file_parts_minus = _file_name.split('-');
             # check if file name has '-' separator
             if (len(_file_parts_minus) > 1):
@@ -65,9 +64,11 @@ def renameFile(fullFileName, flags):
                     _message = "    File " + _file_name;
                     _rename_extention = _rename_list[_gerber_extention];
                     _rename_to_file_name = _gerber_name + '.' + _rename_extention;
-                    _message = _message + "\t --> "  + _file_path + _rename_to_file_name;
-                        #if (flags == 1):
-                        #os.rename(fullFileName,
+                    _full_name_to_rename = os.path.join(filePath, _rename_to_file_name);
+                    _message = _message + "\t --> "  + _rename_to_file_name; #_file_path + _rename_to_file_name;
+                    if (flags == 1):
+                        os.rename(_full_original_name, _full_name_to_rename);
+                        _message = _message + "  passed.";
                     print(_message);
                     return 1;
     else:
@@ -142,7 +143,7 @@ print("Path:", param_path);
 
 fileCnt = 0;
 for name in os.listdir(param_path):
-    if (renameFile(name, 0) == 1): fileCnt = fileCnt + 1;
+    if (renameFile(param_path, name, 1) == 1): fileCnt = fileCnt + 1;
 print("Total files processed:", fileCnt);
 
 wait = input("FINISHED. PRESS ENTER TO CONTINUE\n");
